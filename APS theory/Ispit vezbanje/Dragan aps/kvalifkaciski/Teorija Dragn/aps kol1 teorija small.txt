@@ -1,0 +1,187 @@
+1. Sto e redica?
+
+2. Slozenost na pristapuvanje na element spored indeks vo niza? 
+- O(1)
+
+3.Koga e najdobro da se koristi dinamicko programiranje?
+
+4. So sto najdobro bi se prevrtile elementi?
+- Stek
+
+5. Za adresar preziminja sto se koristi?
+- B drvo
+
+6. Koga graf e prost? 
+- Koga nema ciklusi i paralelni rebra
+
+7. Dali ako nema mesto vo CD togas so alcen bi se dobile optimalni rezultati? 
+- Ne
+
+8. Slozenost na algoritmi ne se meri so? 
+- Nitu eden od ponudenite odgovori a bea dadeni brzina, kapacitet i uste nesto so broj..
+ 
+9. Kaj prioritetna redica najgolemiot clen:
+a)prv vleguva
+b)prv izleguva --------------------------- Tocen
+c)ne izleguva
+d)prv vleguva i posleden izleguva.
+
+10. Sto e prost graf ?
+- Graf vo koj so nema jamki i pararelni rebra.
+
+11. Kompleksnost na pristapuvanje do element preku sodrzina vo niza?
+-O(n)
+
+12. Na edno cd ima N pesni sekoja so memorija Si, cdto e prepolno dali za brisenjeto na pesni za da se oslobodi memorija e tocno da se koristi greedy ?
+-Ne
+
+13. Sto e tocno od slednite za drvo ?
+-Do sekoj jazol ima razlicen pat pocnuvajki od korenot.
+
+14. Kolkava e slozenosta za hesh tabela so zatvoreni koficki?
+O(1) i O(h)
+
+15. Zosto sluzi ciklicna niza?
+- Kaj red se koristi za nadminuvanje na kompleksnosta.
+
+16. Koga grafot e prost?
+-Nema jamki i paralelni rebra.
+
+17. Daden e netezinski i neorientiran graf. Algoritam za minimalno rastojanie od jazol s do bilo koj drug jazol
+- Prebaruvanje po sirina
+
+18. Vnatresen jazol na drvo 
+- Ima najmalce edno dete.
+
+19. Kompleksnosta da stignas do element za element vo nepodredena niza?
+- O(n)
+
+20. Shto e tocno za b drvata?
+- Kaj b drvata site terminalni jazli se na isto nivo.
+
+21. Na koj princip raboti stekot?
+
+22. Koga e najnepovolno da koristime matrica na sosedstvo?
+-Vo odgovorot dadeni se broj na jazli i rebra (treba brojot na jazli da e shto pomal a brojot na rebra pogolem).
+
+23. Комплексност за бришење првиот елемент од листа: 
+- О(1)
+
+24. Sto funkcija OBHT hash so povekje od 1 Step?
+- Pomalku klasteri.
+
+25. Koj e minimalniot broj na jazli kaj binarno drvo so visina d?
+- d+1
+
+26. Shto e tochno kaj grafot: 
+- Teme koe sto ne pripaga na nikoj par rebra (u,v) e izolirano teme
+
+27.Kompleksnost za dodavanje element vo niza : 
+- O(n)
+
+28. Pri ednokratna rotacija na jazel :
+- Inoreder izminuvanjeto ne se menuva (a imase ponudeni, Inoreder izminuvanjeto se menuva, preorder izminuvanjeteo se menuva, preorder izminuvanjeto ne se menuva)
+
+29. Implemetacija na stek so pomos na lista: 
+- Prviot element na listat e vrv na stekot i stekot e neogranicen pri implementacija so lista.
+
+30. Matrica na sosedstvo e najpovolna ako imame: 
+- Najmal broj na jazli i sto pogolem broj na rebra
+
+31. Greedy ne se koristi...Slicno bese prasanjeto so toa od kolkvium za dijagnosticiranje na bolesti, ama so mereneje na temeperatura na zemjata bese
+
+32. Koja e slozenosta za pristap do element vo nepodredena niza?
+-O(n)
+
+33. Koga principot na razdeli i vladej stanuva neefikasen?
+
+34. Brojot na neterminalni jazli kaj drvo so stepen 3 e pomal od brojot na terminalni jazli.
+
+35. Sto funkcija ima OBHT so poveke od 1 step?
+
+36. Kolkava e kompleksnosta na best fit reshenieto kaj knapsack algoritmot ?
+
+37. Asimptotska gorna granica na funkcijata f(n)=8n+1 NE e funckijata?
+a)g(n)=n*n;
+b)g(n)=n*n*n;
+c)g(n)=8n+2;
+d)Nitu edno od ponudenite
+
+38. Kolkava e kompleksnosta za brishenje na element od dvostrana lista ako prethodno e pokazan elementot?
+
+
+39. Kolkava e kompleksnosta dokolku sakate da izbrisete element od krajot na nizata?
+- O(n)
+
+40. Koga se koristi dinamicko programiranje? 
+- Koga problemite se preklopuvaat
+
+41. Sto e red (taka nesto)?
+- Na krajot se dodava element od pocetokot se vadi.
+
+42. Shto e niza?
+
+43. Kompleksnost da se izbrishi prviot element vo lista?
+- O(1)
+
+44. Vo edno CD so m megabajti treba da se zapishat pesni. Vkupnite MB na pesnite se pogolemi od m. Dali Greedy algoritamot e najefikasen vo ovoj sluchaj?
+- Ne
+
+45. Idejata na INSERTION SORT:
+- Vo prethodno vekje sortirana podniza
+
+46. Kompleksnosta na algoritmot od shto NE zavisi?
+
+47. Kolkava e kompleksnosta na brishenje 1 element od lista?
+- O(n)
+
+48. Koj od ovie ima najgolema kompleksnost?
+- (I tuka opcii od o ( n), o (n^2) I sl)
+
+49. Koga e dobro razdeli pa vladej?
+
+50. Koj algoritam e najdobar za prevrtuvanje na niza?
+
+51. Od datoteka se sortirat 200 iminja za 200ns so bubble sort...kolku vreme treba za da 800 iminja?
+- 400ns
+
+52. Prevrtuvanje na elementi vo niza e prinzip slicen na...
+- Stek
+
+53. Koga stanuva razdeli i vladej ne efikasen?
+- Koga podproblemite se preklopuvaat
+
+54. Koga se upotrebuva dinamicko programiranje?
+- Koga problemite se preklopuvaat 
+
+55. Golemo omega e :
+- Dolna granica (...izvrsuvanje na programata vo najdobar slucaj)
+
+56. Ako treba da se dijagnosticira nekoja bolest , dali treba da se upotrebi alcen algoritam?
+-Ne
+
+57. Koga se upotrebuva bubble sort?
+
+58. Isti best case and worst case kaj koi sortiranja:
+- Merge и maximumEntry mislam bea
+
+59. Koj od slednite e najdobro resenije za prevrtuvanje na redosled na elementi?
+- Stek
+
+60. Koj od ovie algoritmi najsporo ke se realizira?
+- O(2^n)
+  O(n*n*n)
+  i uste dve opcii ne pamtam..ama odgovorot bese pod A.... (2^n
+
+61. Sortiranje na niza od koi 4 iteracii bile vekje izvrsheni daden primer 1 2 4 5 3 8 7), da se odbere so koj algoritam se sortira:
+- (Insertion).
+
+
+
+
+
+
+
+
+
+

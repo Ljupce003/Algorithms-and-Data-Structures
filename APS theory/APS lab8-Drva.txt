@@ -1,0 +1,908 @@
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//zad1
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.*;
+
+interface Tree<E> {
+    ////////////Accessors ////////////
+
+    public Node<E> root();
+
+    public Node<E> parent(Node<E> node);
+
+    public int childCount(Node<E> node);
+
+    ////////////Transformers ////////////
+    public void makeRoot(E elem);
+
+    public Node<E> addChild(Node<E> node, E elem);
+
+    public void remove(Node<E> node);
+
+    ////////////Iterator ////////////
+    public Iterator<E> children(Node<E> node);
+
+}
+
+interface Node<E> {
+
+    public E getElement();
+
+    public void setElement(E elem);
+}
+
+
+class SLLTree<E extends Comparable<? super E>> implements Tree<E> {
+
+    public SLLNode<E> root;
+
+    public SLLTree() {
+        root = null;
+    }
+
+    public Node<E> root() {
+        return root;
+    }
+
+    public Node<E> parent(Node<E> node) {
+        return ((SLLNode<E>) node).parent;
+    }
+
+    public int childCount(Node<E> node) {
+        SLLNode<E> tmp = ((SLLNode<E>) node).firstChild;
+        int num = 0;
+        while (tmp != null) {
+            tmp = tmp.sibling;
+            num++;
+        }
+        return num;
+    }
+
+    public void makeRoot(E elem) {
+        root = new SLLNode<E>(elem);
+    }
+
+    public Node<E> addChild(Node<E> node, E elem) {
+        SLLNode<E> tmp = new SLLNode<E>(elem);
+        SLLNode<E> curr = (SLLNode<E>) node;
+        tmp.sibling = curr.firstChild;
+        curr.firstChild = tmp;
+        tmp.parent = curr;
+        return tmp;
+    }
+
+    public void remove(Node<E> node) {
+        SLLNode<E> curr = (SLLNode<E>) node;
+        if (curr.parent != null) {
+            if (curr.parent.firstChild == curr) {
+                // The node is the first child of its parent
+                // Reconnect the parent to the next sibling
+                curr.parent.firstChild = curr.sibling;
+            } else {
+                // The node is not the first child of its parent
+                // Start from the first and search the node in the sibling list and remove it
+                SLLNode<E> tmp = curr.parent.firstChild;
+                while (tmp.sibling != curr) {
+                    tmp = tmp.sibling;
+                }
+                tmp.sibling = curr.sibling;
+            }
+        } else {
+            root = null;
+        }
+    }
+
+    class SLLTreeIterator<T> implements Iterator<T> {
+
+        SLLNode<T> start, current;
+
+        public SLLTreeIterator(SLLNode<T> node) {
+            start = node;
+            current = node;
+        }
+
+        public boolean hasNext() {
+            return (current != null);
+        }
+
+        public T next() throws NoSuchElementException {
+            if (current != null) {
+                SLLNode<T> tmp = current;
+                current = current.sibling;
+                return tmp.getElement();
+            } else {
+                throw new NoSuchElementException();
+            }
+        }
+
+        public void remove() {
+            if (current != null) {
+                current = current.sibling;
+            }
+        }
+    }
+
+    public Iterator<E> children(Node<E> node) {
+        return new SLLTreeIterator<E>(((SLLNode<E>) node).firstChild);
+    }
+
+
+
+    void printTreeRecursive(Node<E> node, int level) {
+        if (node == null)
+            return;
+        int i;
+        SLLNode<E> tmp;
+
+        for (i=0;i<level;i++)
+            System.out.print(" ");
+        System.out.println(node.getElement().toString());
+        tmp = ((SLLNode<E>)node).firstChild;
+        while (tmp != null) {
+            printTreeRecursive(tmp, level+1);
+            tmp = tmp.sibling;
+        }
+    }
+
+    public void printTree() {
+        printTreeRecursive(root, 0);
+    }
+    public void printsortiranoTree(Node<E> node, int level) {
+        if (node == null)
+            return;
+        int i;
+        SLLNode<E> tmp = ((SLLNode<E>) node).firstChild;
+        
+        List<SLLNode<E>> children = new ArrayList<SLLNode<E>>();
+        while (tmp != null) {
+            children.add(tmp);
+            tmp = tmp.sibling;
+        }
+        children.sort(Comparator.comparing(n -> n.element));
+
+        for (i = 0; i < level; i++)
+            System.out.print(" ");
+        System.out.println(node.getElement().toString());
+
+        for (SLLNode<E> child : children) {
+            printsortiranoTree(child, level + 1);
+        }
+    }
+
+}
+
+class SLLNode<P> implements Node<P> {
+
+    // Holds the links to the needed nodes
+    public SLLNode<P> parent, sibling, firstChild;
+    // Hold the data
+    public P element;
+
+    public SLLNode(P o) {
+        element = o;
+        parent = sibling = firstChild = null;
+    }
+
+    public P getElement() {
+        return element;
+    }
+
+    public void setElement(P o) {
+        element = o;
+    }
+}
+
+public class WindowsExplorer {
+
+    public static void main(String[] args) throws Exception {
+        int i, j, k;
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        int N = Integer.parseInt(br.readLine());
+        String[] commands = new String[N];
+
+        for (i = 0; i < N; i++)
+            commands[i] = br.readLine();
+
+        br.close();
+
+        SLLTree<String> tree = new SLLTree<String>();
+        tree.makeRoot("c:");
+        SLLNode<String> curr = tree.root;
+        for (i = 0; i < N; i++) {
+            String command = commands[i].split("\\s+")[0];
+            if (command.equals("CREATE")) {
+                String child = commands[i].split("\\s+")[1];
+                tree.addChild(curr, child);
+            }
+            if (command.equals("OPEN")) {
+                String child = commands[i].split("\\s+")[1];
+                if (curr!=null && curr.firstChild!=null && curr.firstChild.element.equals(child)) curr = curr.firstChild;
+                else {
+                    SLLNode<String> tmp = curr.firstChild;
+                    while (tmp != null) {
+                        if (tmp.element.equals(child)) {
+                            curr = tmp;
+                            break;
+                        } else tmp = tmp.sibling;
+                    }
+                }
+            }
+            if (command.equals("BACK")) {
+                if (curr != null) curr = curr.parent;
+            }
+            if (command.equals("PATH")) {
+                SLLNode<String> tmp = curr;
+                print(tmp, "\\", tree);
+
+
+            }
+            if (command.equals("PRINT")) {
+                //tree.printTree();
+                tree.printsortiranoTree(tree.root,0);
+            }
+
+            if (command.equals("DELETE")) {
+                String child = commands[i].split("\\s+")[1];
+                if (curr!=null && curr.firstChild!=null && curr.firstChild.element.equals(child)) tree.remove(curr.firstChild);
+                else {
+                    SLLNode<String> tmp = curr.firstChild;
+                    while (tmp != null) {
+                        if (tmp.element.equals(child)) {
+                            tree.remove(tmp);
+                            break;
+                        } else tmp = tmp.sibling;
+                    }
+                }
+
+            }
+
+        }
+        // vasiot kod stoi ovde
+
+    }
+
+    private static void print(SLLNode<String> tmp, String s, SLLTree<String> tree) {
+        if(tmp==tree.root) System.out.println(tmp.element+s);
+        else print(tmp.parent,"\\"+tmp.element+s,tree);
+
+    }
+
+
+}
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//zad2
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
+import java.util.NoSuchElementException;
+
+class BNode<E> {
+
+    public E info;
+    public BNode<E> left;
+    public BNode<E> right;
+
+    static int LEFT = 1;
+    static int RIGHT = 2;
+
+    public BNode(E info) {
+        this.info = info;
+        left = null;
+        right = null;
+    }
+
+    public BNode() {
+        this.info = null;
+        left = null;
+        right = null;
+    }
+
+    public BNode(E info, BNode<E> left, BNode<E> right) {
+        this.info = info;
+        this.left = left;
+        this.right = right;
+    }
+
+}
+
+class BTree<E> {
+
+    public BNode<E> root;
+
+    public BTree() {
+        root = null;
+    }
+
+    public BTree(E info) {
+        root = new BNode<E>(info);
+    }
+
+    public void makeRoot(E elem) {
+        root = new BNode<E>(elem);
+    }
+
+    public void makeRootNode(BNode<E> node) {
+        root = node;
+    }
+
+    public BNode<E> addChild(BNode<E> node, int where, E elem) {
+
+        BNode<E> tmp = new BNode<E>(elem);
+
+        if (where == BNode.LEFT) {
+            if (node.left != null)  // veke postoi element
+                return null;
+            node.left = tmp;
+        } else {
+            if (node.right != null) // veke postoi element
+                return null;
+            node.right = tmp;
+        }
+
+        return tmp;
+    }
+
+    public BNode<E> addChildNode(BNode<E> node, int where, BNode<E> tmp) {
+
+        if (where == BNode.LEFT) {
+            if (node.left != null)  // veke postoi element
+                return null;
+            node.left = tmp;
+        } else {
+            if (node.right != null) // veke postoi element
+                return null;
+            node.right = tmp;
+        }
+
+        return tmp;
+    }
+
+    public void PreorderNonRecursive() {
+        // vasiot kod ovde
+        // your code here
+        Stack<BNode<E>> redica=new ArrayStack<BNode<E>>(100);
+        if(root!=null)redica.push(root);
+        StringBuilder s= new StringBuilder();
+        s.append(redica.peek().info).append(" ");
+        BNode<E> recent = null;
+        while(!redica.isEmpty()){
+
+            BNode<E> tmp=redica.peek();
+            if(tmp.left!=null ){
+
+                if(tmp.left!=recent){
+                    redica.push(tmp.left);
+                    s.append(redica.peek().info).append(" ");
+
+                }
+                else tmp.left=null;
+
+            }
+            if(tmp.left==null && tmp.right!=null){
+                if(tmp.right!=recent){
+                    redica.push(tmp.right);
+                    s.append(redica.peek().info).append(" ");
+                }
+                else tmp.right=null;
+            }
+            if(tmp.left==null && tmp.right==null){recent=redica.pop();}
+
+        }
+
+        System.out.println(s);
+    }
+
+}
+
+interface Stack<E> {
+
+    // Elementi na stekot se objekti od proizvolen tip.
+
+    // Metodi za pristap:
+
+    public boolean isEmpty ();
+    // Vrakja true ako i samo ako stekot e prazen.
+
+    public E peek ();
+    // Go vrakja elementot na vrvot od stekot.
+
+    // Metodi za transformacija:
+
+    public void clear ();
+    // Go prazni stekot.
+
+    public void push (E x);
+    // Go dodava x na vrvot na stekot.
+
+    public E pop ();
+    // Go otstranuva i vrakja elementot shto e na vrvot na stekot.
+}
+
+class ArrayStack<E> implements Stack<E> {
+    private E[] elems;
+    private int depth;
+
+    @SuppressWarnings("unchecked")
+    public ArrayStack (int maxDepth) {
+        // Konstrukcija na nov, prazen stek.
+        elems = (E[]) new Object[maxDepth];
+        depth = 0;
+    }
+
+
+    public boolean isEmpty () {
+        // Vrakja true ako i samo ako stekot e prazen.
+        return (depth == 0);
+    }
+
+
+    public E peek () {
+        // Go vrakja elementot na vrvot od stekot.
+        if (depth == 0)
+            throw new NoSuchElementException();
+        return elems[depth-1];
+    }
+
+
+    public void clear () {
+        // Go prazni stekot.
+        for (int i = 0; i < depth; i++)  elems[i] = null;
+        depth = 0;
+    }
+
+
+    public void push (E x) {
+        // Go dodava x na vrvot na stekot.
+        elems[depth++] = x;
+    }
+
+
+    public E pop () {
+        // Go otstranuva i vrakja elementot shto e na vrvot na stekot.
+        if (depth == 0)
+            throw new NoSuchElementException();
+        E topmost = elems[--depth];
+        elems[depth] = null;
+        return topmost;
+    }
+}
+
+public class PreorderNonRecursive {
+
+    public static void main(String[] args) throws Exception {
+        int i, j, k;
+        int index;
+        String action;
+
+        String line;
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
+
+        int N = Integer.parseInt(br.readLine());
+
+        @SuppressWarnings("unchecked")
+        BNode<String> nodes[] = new BNode[N];
+        BTree<String> tree = new BTree<String>();
+
+        for (i=0;i<N;i++)
+            nodes[i] = new BNode<String>();
+
+        for (i = 0; i < N; i++) {
+            line = br.readLine();
+            st = new StringTokenizer(line);
+            index = Integer.parseInt(st.nextToken());
+            nodes[index].info = st.nextToken();
+            action = st.nextToken();
+            if (action.equals("LEFT")) {
+                tree.addChildNode(nodes[Integer.parseInt(st.nextToken())], BNode.LEFT, nodes[index]);
+            } else if (action.equals("RIGHT")) {
+                tree.addChildNode(nodes[Integer.parseInt(st.nextToken())], BNode.RIGHT, nodes[index]);
+            } else {
+                // this node is the root
+                tree.makeRootNode(nodes[index]);
+            }
+        }
+
+        br.close();
+
+        tree.PreorderNonRecursive();
+
+    }
+}
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//zad3
+
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+
+class BNode<E extends Comparable<E>> {
+
+    public E info;
+    public BNode<E> left;
+    public BNode<E> right;
+
+    static int LEFT = 1;
+    static int RIGHT = 2;
+
+    public BNode(E info) {
+        this.info = info;
+        left = null;
+        right = null;
+    }
+
+    public BNode() {
+        this.info = null;
+        left = null;
+        right = null;
+    }
+
+    public BNode(E info, BNode<E> left, BNode<E> right) {
+        this.info = info;
+        this.left = left;
+        this.right = right;
+    }
+
+}
+
+class BTree<E extends Comparable<E>> {
+
+    public BNode<E> root;
+
+    public BTree() {
+        root = null;
+    }
+
+    public BTree(E info) {
+        root = new BNode<E>(info);
+    }
+
+    public void makeRoot(E elem) {
+        root = new BNode<E>(elem);
+    }
+
+    public void makeRootNode(BNode<E> node) {
+        root = node;
+    }
+
+    public BNode<E> addChild(BNode<E> node, int where, E elem) {
+
+        BNode<E> tmp = new BNode<E>(elem);
+
+        if (where == BNode.LEFT) {
+            if (node.left != null)  // veke postoi element
+                return null;
+            node.left = tmp;
+        } else {
+            if (node.right != null) // veke postoi element
+                return null;
+            node.right = tmp;
+        }
+
+        return tmp;
+    }
+
+    public BNode<E> addChildNode(BNode<E> node, int where, BNode<E> tmp) {
+
+        if (where == BNode.LEFT) {
+            if (node.left != null)  // veke postoi element
+                return null;
+            node.left = tmp;
+        } else {
+            if (node.right != null) // veke postoi element
+                return null;
+            node.right = tmp;
+        }
+
+        return tmp;
+    }
+
+}
+
+public class BinaryTreeSum {
+
+
+    public static void main(String[] args) throws Exception {
+        int i, j, k;
+        int index;
+        String action;
+
+        String line;
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
+
+        int N = Integer.parseInt(br.readLine());
+
+
+        List<BNode<Integer>> nodes = new ArrayList<>();
+        BTree<Integer> tree = new BTree<Integer>();
+
+        for (i = 0; i < N; i++)
+            nodes.add(new BNode<Integer>());
+
+        for (i = 0; i < N; i++) {
+            line = br.readLine();
+            st = new StringTokenizer(line);
+            index = Integer.parseInt(st.nextToken());
+            nodes.get(index).info = Integer.parseInt(st.nextToken());
+            action = st.nextToken();
+            if (action.equals("LEFT")) {
+                tree.addChildNode(nodes.get(Integer.parseInt(st.nextToken())), BNode.LEFT, nodes.get(index));
+            } else if (action.equals("RIGHT")) {
+                tree.addChildNode(nodes.get(Integer.parseInt(st.nextToken())), BNode.RIGHT, nodes.get(index));
+            } else {
+                // this node is the root
+                tree.makeRootNode(nodes.get(index));
+            }
+        }
+        /*
+        BNode<Integer> nodes[] = new BNode[N];
+        BTree<Integer> tree = new BTree<Integer>();
+
+        for (i=0;i<N;i++)
+            nodes[i] = new BNode<Integer>();
+
+        for (i = 0; i < N; i++) {
+            line = br.readLine();
+            st = new StringTokenizer(line);
+            index = Integer.parseInt(st.nextToken());
+            nodes[index].info = Integer.parseInt(st.nextToken());
+            action = st.nextToken();
+            if (action.equals("LEFT")) {
+                tree.addChildNode(nodes[Integer.parseInt(st.nextToken())], BNode.LEFT, nodes[index]);
+            } else if (action.equals("RIGHT")) {
+                tree.addChildNode(nodes[Integer.parseInt(st.nextToken())], BNode.RIGHT, nodes[index]);
+            } else {
+                // this node is the root
+                tree.makeRootNode(nodes[index]);
+            }
+        }
+
+        */
+
+        int baranaVrednost=Integer.parseInt(br.readLine());
+
+        br.close();
+        int sumlevo=0;
+        int sumdesno=0;
+
+//        if(tree.root.info==baranaVrednost){
+//            sumlevo=sumlevjazol(tree.root.left,baranaVrednost);
+//            sumdesno=sumdesenjazol(tree.root.right,baranaVrednost);
+//            System.out.println(sumlevo+" "+sumdesno);
+//        }
+       // else {
+            BNode<Integer> node= find(tree.root,baranaVrednost);
+            if(node.left!=null)sumlevo=sumlevjazol(node.left,baranaVrednost);
+            if(node.right!=null)sumdesno=sumdesenjazol(node.right,baranaVrednost);
+            System.out.println(sumlevo+" "+sumdesno);
+        //}
+
+
+    }
+
+    private static BNode<Integer> find(BNode<Integer> node, int baranaVrednost) {
+        BNode<Integer> nod=null;
+        if(node.info==baranaVrednost)return node;
+        else {
+            if(node.left != null) {nod=find(node.left,baranaVrednost);}
+            if(nod!=null)return nod;
+            if(node.right !=null) nod=find(node.right,baranaVrednost);
+        }
+        return nod;
+    }
+
+    private static int sumdesenjazol(BNode<Integer> jazol, int barana) {
+        int sum=0;
+        if(jazol.left!=null)sum+=sumdesenjazol(jazol.left,barana);
+        if(jazol.right!=null)sum+=sumdesenjazol(jazol.right, barana);
+        if(jazol.info>barana)sum+= jazol.info;
+        return sum;
+    }
+
+    private static int sumlevjazol(BNode<Integer> jazol,int barana) {
+        int sum=0;
+        if(jazol.left!=null)sum+=sumlevjazol(jazol.left,barana);
+        if(jazol.right!=null)sum+=sumlevjazol(jazol.right, barana);
+        if(jazol.info<barana)sum+= jazol.info;
+        return sum;
+    }
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// zad3 tocno alternativno
+
+
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
+
+class BNode<E> {
+    
+    public E info;
+    public BNode<E> left;
+    public BNode<E> right;
+    
+    static int LEFT = 1;
+    static int RIGHT = 2;
+    
+    public BNode(E info) {
+        this.info = info;
+        left = null;
+        right = null;
+    }
+    
+    public BNode() {
+        this.info = null;
+        left = null;
+        right = null;
+    }
+    
+    public BNode(E info, BNode<E> left, BNode<E> right) {
+        this.info = info;
+        this.left = left;
+        this.right = right;
+    }
+    
+}
+
+@SuppressWarnings("unchecked")
+class BTree<E extends Comparable<E>> {
+    
+    public BNode<E> root;
+    
+    public BTree() {
+        root = null;
+    }
+    
+    public BTree(E info) {
+        root = new BNode<E>(info);
+    }
+    
+    public void makeRoot(E elem) {
+        root = new BNode(elem);
+    }
+    
+    public void makeRootNode(BNode<E> node) {
+        root = node;
+    }
+    
+    public BNode<E> addChild(BNode<E> node, int where, E elem) {
+        
+        BNode<E> tmp = new BNode<E>(elem);
+        
+        if (where == BNode.LEFT) {
+            if (node.left != null)  // veke postoi element
+                return null;
+            node.left = tmp;
+        } else {
+            if (node.right != null) // veke postoi element
+                return null;
+            node.right = tmp;
+        }
+        
+        return tmp;
+    }
+    
+    public BNode<E> addChildNode(BNode<E> node, int where, BNode<E> tmp) {
+        
+        if (where == BNode.LEFT) {
+            if (node.left != null)  // veke postoi element
+                return null;
+            node.left = tmp;
+        } else {
+            if (node.right != null) // veke postoi element
+                return null;
+            node.right = tmp;
+        }
+        
+        return tmp;
+    }
+
+}
+
+@SuppressWarnings("unchecked")
+public class BinaryTreeSum {
+    
+
+    public static void main(String[] args) throws Exception {
+        int i, j, k;
+        int index;
+        String action;
+        
+        String line;
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
+
+        int N = Integer.parseInt(br.readLine());
+
+        BNode<Integer> nodes[] = new BNode[N];
+        BTree<Integer> tree = new BTree<Integer>();
+        
+        for (i=0;i<N;i++)
+            nodes[i] = new BNode<Integer>();
+        
+        for (i = 0; i < N; i++) {
+            line = br.readLine();
+            st = new StringTokenizer(line);
+            index = Integer.parseInt(st.nextToken());
+            nodes[index].info = Integer.parseInt(st.nextToken());
+            action = st.nextToken();
+            if (action.equals("LEFT")) {
+                tree.addChildNode(nodes[Integer.parseInt(st.nextToken())], BNode.LEFT, nodes[index]);
+            } else if (action.equals("RIGHT")) {
+                tree.addChildNode(nodes[Integer.parseInt(st.nextToken())], BNode.RIGHT, nodes[index]);    
+            } else {
+                // this node is the root
+                tree.makeRootNode(nodes[index]);
+            }
+        }
+
+        int baranaVrednost=Integer.parseInt(br.readLine());
+        
+        br.close();
+        
+        // vasiot kod ovde   // your code here
+     int sumlevo=0;
+        int sumdesno=0;
+
+        BNode<Integer> node= find(tree.root,baranaVrednost);
+        if(node.left!=null)sumlevo=sumlevjazol(node.left,baranaVrednost);
+        if(node.right!=null)sumdesno=sumdesenjazol(node.right,baranaVrednost);
+        System.out.println(sumlevo+" "+sumdesno);
+
+
+
+    }
+
+    private static BNode<Integer> find(BNode<Integer> node, int baranaVrednost) {
+        BNode<Integer> nod=null;
+        if(node.info==baranaVrednost)return node;
+        else {
+            if(node.left != null) {nod=find(node.left,baranaVrednost);}
+            if(nod!=null)return nod;
+            if(node.right !=null) nod=find(node.right,baranaVrednost);
+        }
+        return nod;
+    }
+
+    private static int sumdesenjazol(BNode<Integer> jazol, int barana) {
+        int sum=0;
+        if(jazol.left!=null)sum+=sumdesenjazol(jazol.left,barana);
+        if(jazol.right!=null)sum+=sumdesenjazol(jazol.right, barana);
+        if(jazol.info>barana)sum+= jazol.info;
+        return sum;
+    }
+
+    private static int sumlevjazol(BNode<Integer> jazol,int barana) {
+        int sum=0;
+        if(jazol.left!=null)sum+=sumlevjazol(jazol.left,barana);
+        if(jazol.right!=null)sum+=sumlevjazol(jazol.right, barana);
+        if(jazol.info<barana)sum+= jazol.info;
+        return sum;
+    }
+}
+
+

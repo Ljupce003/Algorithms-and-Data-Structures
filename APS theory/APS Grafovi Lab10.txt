@@ -1,0 +1,932 @@
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//zad1
+
+import java.util.*;
+import java.util.Map.Entry;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+
+
+
+class AdjacencyListGraph<T> {
+    private Map<T, Set<T>> adjacencyList;
+
+    public AdjacencyListGraph() {
+        this.adjacencyList = new HashMap<>();
+    }
+
+    // Add a vertex to the graph
+    public void addVertex(T vertex) {
+        if (!adjacencyList.containsKey(vertex)) {
+            adjacencyList.put(vertex, new HashSet<>());
+        }
+    }
+
+    // Remove a vertex from the graph
+    public void removeVertex(T vertex) {
+        // Remove the vertex from all adjacency lists
+        for (Set<T> neighbors : adjacencyList.values()) {
+            neighbors.remove(vertex);
+        }
+        // Remove the vertex's own entry in the adjacency list
+        adjacencyList.remove(vertex);
+    }
+
+    // Add an edge to the graph
+    public void addEdge(T source, T destination) {
+        addVertex(source);
+        addVertex(destination);
+
+        adjacencyList.get(source).add(destination);
+        adjacencyList.get(destination).add(source); // for undirected graph
+    }
+
+    // Remove an edge from the graph
+    public void removeEdge(T source, T destination) {
+        if (adjacencyList.containsKey(source)) {
+            adjacencyList.get(source).remove(destination);
+        }
+        if (adjacencyList.containsKey(destination)) {
+            adjacencyList.get(destination).remove(source); // for undirected graph
+        }
+    }
+
+    // Get all neighbors of a vertex
+    public Set<T> getNeighbors(T vertex) {
+        return adjacencyList.getOrDefault(vertex, new HashSet<>());
+    }
+
+    public void DFS(T startVertex) {
+        Set<T> visited = new HashSet<>();
+        DFSUtil(startVertex, visited);
+    }
+
+    private void DFSUtil(T vertex, Set<T> visited) {
+        // Mark the current node as visited and print it
+        visited.add(vertex);
+        System.out.print(vertex + " ");
+
+        // Recur for all the vertices adjacent to this vertex
+        for (T neighbor : getNeighbors(vertex)) {
+            if (!visited.contains(neighbor)) {
+                DFSUtil(neighbor, visited);
+            }
+        }
+    }
+
+
+    public void DFSNonRecursive(T startVertex) {
+        Set<T> visited = new HashSet<>();
+        Stack<T> stack = new Stack<>();
+
+        stack.push(startVertex);
+        while (!stack.isEmpty()) {
+            T vertex = stack.pop();
+            if (!visited.contains(vertex)) {
+                visited.add(vertex);
+                System.out.print(vertex + " ");
+                for (T neighbor : getNeighbors(vertex)) {
+                    if (!visited.contains(neighbor)) {
+                        stack.push(neighbor);
+                    }
+                }
+            }
+        }
+    }
+
+    public List<T> getvertices(){
+        return new ArrayList<>(adjacencyList.keySet());
+    }
+
+    public void BFS(T startVertex) {
+        Set<T> visited = new HashSet<>();
+        Queue<T> queue = new LinkedList<>();
+
+        visited.add(startVertex);
+        queue.add(startVertex);
+
+        while (!queue.isEmpty()) {
+            T vertex = queue.poll();
+            System.out.print(vertex + " ");
+
+            for (T neighbor : getNeighbors(vertex)) {
+                if (!visited.contains(neighbor)) {
+                    visited.add(neighbor);
+                    queue.add(neighbor);
+                }
+            }
+        }
+    }
+
+    public void findPath(T startVertex, T endVertex) {
+        Set<T> visited = new HashSet<>();
+        Stack<T> invertedPath = new Stack<>();
+        visited.add(startVertex);
+        invertedPath.push(startVertex);
+
+        while(!invertedPath.isEmpty() && !invertedPath.peek().equals(endVertex)) {
+            T currentVertex = invertedPath.peek();
+            T tmp = currentVertex;
+
+            for(T vertex : getNeighbors(currentVertex)) {
+                tmp = vertex;
+                if(!visited.contains(vertex)) {
+                    break;
+                }
+            }
+
+            if(!visited.contains(tmp)) {
+                visited.add(tmp);
+                invertedPath.push(tmp);
+            }
+            else {
+                invertedPath.pop();
+            }
+        }
+
+        Stack<T> path = new Stack<>();
+        while(!invertedPath.isEmpty()) {
+            path.push(invertedPath.pop());
+        }
+        while(!path.isEmpty()) {
+            System.out.println(path.pop());
+        }
+    }
+
+
+    public Map<T, Set<T>> getAdjacencyList() {
+        return adjacencyList;
+    }
+
+    @Override
+    public String toString() {
+        String ret = new String();
+        for (Entry<T, Set<T>> vertex : adjacencyList.entrySet())
+            ret += vertex.getKey() + ": " + vertex.getValue() + "\n";
+        return ret;
+    }
+
+
+
+}
+
+public class Grapha{
+
+    public static void main(String[] args) throws IOException {
+        BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+        int N=Integer.parseInt(br.readLine());
+        AdjacencyListGraph<Integer> adjacencyListGraph = null;
+        for (int i = 0; i < N; i++) {
+            String []S=br.readLine().split("\\s+");
+            if(S[0].equals("CREATE")){
+                adjacencyListGraph=new AdjacencyListGraph<>();
+            }
+            if(S[0].equals("ADDEDGE")){
+                int e1=Integer.parseInt(S[1]);
+                int e2=Integer.parseInt(S[2]);
+                if(adjacencyListGraph != null)adjacencyListGraph.addEdge(e1,e2);
+            }
+            if(S[0].equals("PRINTGRAPH")){
+                if (adjacencyListGraph != null) {
+                    Map<Integer,Set<Integer>> mapa=adjacencyListGraph.getAdjacencyList();
+                    List<Integer> rebra=new ArrayList<>(mapa.keySet());
+                    for (int j=0;j<rebra.size();j++){
+                        int rebro=rebra.get(j);
+                        System.out.print(rebro+": ");
+                        System.out.println(mapa.get(rebro).toString());
+                    }
+                    System.out.println();
+                }
+            }
+            if(S[0].equals("ADJACENT")){
+                int e1=Integer.parseInt(S[1]);
+                int e2=Integer.parseInt(S[2]);
+                if (adjacencyListGraph != null) {
+                    Set<Integer> neighbourlist=adjacencyListGraph.getNeighbors(e1);
+                    System.out.println(neighbourlist.contains(e2));
+                }
+            }
+            if(S[0].equals("DELETEEDGE")){
+                int e1=Integer.parseInt(S[1]);
+                int e2=Integer.parseInt(S[2]);
+                if (adjacencyListGraph != null)adjacencyListGraph.removeEdge(e1,e2);
+            }
+
+
+        }
+
+    }
+
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//zad2
+
+
+
+import java.util.*;
+import java.util.Map.Entry;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
+
+
+class AdjacencyListGraph<T> {
+    private Map<T, Set<T>> adjacencyList;
+
+    public AdjacencyListGraph() {
+        this.adjacencyList = new HashMap<>();
+    }
+
+    // Add a vertex to the graph
+    public void addVertex(T vertex) {
+        if (!adjacencyList.containsKey(vertex)) {
+            adjacencyList.put(vertex, new HashSet<>());
+        }
+    }
+
+    // Remove a vertex from the graph
+    public void removeVertex(T vertex) {
+        // Remove the vertex from all adjacency lists
+        for (Set<T> neighbors : adjacencyList.values()) {
+            neighbors.remove(vertex);
+        }
+        // Remove the vertex's own entry in the adjacency list
+        adjacencyList.remove(vertex);
+    }
+
+    // Add an edge to the graph
+    public void addEdge(T source, T destination) {
+        addVertex(source);
+        addVertex(destination);
+
+        adjacencyList.get(source).add(destination);
+        adjacencyList.get(destination).add(source); // for undirected graph
+    }
+
+    // Remove an edge from the graph
+    public void removeEdge(T source, T destination) {
+        if (adjacencyList.containsKey(source)) {
+            adjacencyList.get(source).remove(destination);
+        }
+        if (adjacencyList.containsKey(destination)) {
+            adjacencyList.get(destination).remove(source); // for undirected graph
+        }
+    }
+
+    // Get all neighbors of a vertex
+    public Set<T> getNeighbors(T vertex) {
+        return adjacencyList.getOrDefault(vertex, new HashSet<>());
+    }
+
+    public void DFS(T startVertex) {
+        Set<T> visited = new HashSet<>();
+        DFSUtil(startVertex, visited);
+    }
+
+    private void DFSUtil(T vertex, Set<T> visited) {
+        // Mark the current node as visited and print it
+        visited.add(vertex);
+        System.out.print(vertex + " ");
+
+        // Recur for all the vertices adjacent to this vertex
+        for (T neighbor : getNeighbors(vertex)) {
+            if (!visited.contains(neighbor)) {
+                DFSUtil(neighbor, visited);
+            }
+        }
+    }
+
+
+    public void DFSNonRecursive(T startVertex) {
+        Set<T> visited = new HashSet<>();
+        Stack<T> stack = new Stack<>();
+
+        stack.push(startVertex);
+        while (!stack.isEmpty()) {
+            T vertex = stack.pop();
+            if (!visited.contains(vertex)) {
+                visited.add(vertex);
+                System.out.print(vertex + " ");
+                for (T neighbor : getNeighbors(vertex)) {
+                    if (!visited.contains(neighbor)) {
+                        stack.push(neighbor);
+                    }
+                }
+            }
+        }
+    }
+
+    public List<T> getvertices(){
+        return new ArrayList<>(adjacencyList.keySet());
+    }
+
+    public void BFS(T startVertex) {
+        Set<T> visited = new HashSet<>();
+        Queue<T> queue = new LinkedList<>();
+
+        visited.add(startVertex);
+        queue.add(startVertex);
+
+        while (!queue.isEmpty()) {
+            T vertex = queue.poll();
+            System.out.print(vertex + " ");
+
+            for (T neighbor : getNeighbors(vertex)) {
+                if (!visited.contains(neighbor)) {
+                    visited.add(neighbor);
+                    queue.add(neighbor);
+                }
+            }
+        }
+    }
+
+    public void findPath(T startVertex, T endVertex) {
+        Set<T> visited = new HashSet<>();
+        Stack<T> invertedPath = new Stack<>();
+        visited.add(startVertex);
+        invertedPath.push(startVertex);
+
+        while(!invertedPath.isEmpty() && !invertedPath.peek().equals(endVertex)) {
+            T currentVertex = invertedPath.peek();
+            T tmp = currentVertex;
+
+            for(T vertex : getNeighbors(currentVertex)) {
+                tmp = vertex;
+                if(!visited.contains(vertex)) {
+                    break;
+                }
+            }
+
+            if(!visited.contains(tmp)) {
+                visited.add(tmp);
+                invertedPath.push(tmp);
+            }
+            else {
+                invertedPath.pop();
+            }
+        }
+
+        Stack<T> path = new Stack<>();
+        while(!invertedPath.isEmpty()) {
+            path.push(invertedPath.pop());
+        }
+        while(!path.isEmpty()) {
+            System.out.println(path.pop());
+        }
+    }
+
+
+    public Map<T, Set<T>> getAdjacencyList() {
+        return adjacencyList;
+    }
+
+    @Override
+    public String toString() {
+        String ret = new String();
+        for (Entry<T, Set<T>> vertex : adjacencyList.entrySet())
+            ret += vertex.getKey() + ": " + vertex.getValue() + "\n";
+        return ret;
+    }
+
+
+
+}
+
+
+class AdjacencyMatrixGraph<T> {
+    private int numVertices;
+    private int[][] matrix;
+    private T[] vertices;
+
+    @SuppressWarnings("unchecked")
+    public AdjacencyMatrixGraph(int numVertices) {
+        this.numVertices = numVertices;
+        matrix = new int[numVertices][numVertices];
+        vertices = (T[]) new Object[numVertices];
+    }
+
+    public void addVertex(int index, T data) {
+        vertices[index] = data;
+    }
+
+    public T getVertex(int index) {
+        return vertices[index];
+    }
+
+    public void addEdge(int source, int destination) {
+        matrix[source][destination] = 1;
+        matrix[destination][source] = 1; // For undirected graph
+    }
+
+    public boolean isEdge(int source, int destination) {
+        return matrix[source][destination] == 1;
+    }
+
+
+    public void removeEdge(int source, int destination) {
+        matrix[source][destination] = 0;
+        matrix[destination][source] = 0; // For undirected graph
+    }
+
+    @SuppressWarnings("unchecked")
+    public void removeVertex(int vertexIndex) {
+        if (vertexIndex < 0 || vertexIndex >= numVertices) {
+            throw new IndexOutOfBoundsException("Vertex index out of bounds!");
+        }
+        int[][] newMatrix = new int[numVertices-1][numVertices-1];
+        T[] newVertices = (T[]) new Object[numVertices-1];
+        // Copy the vertices and matrix excluding the given vertex
+        int ni = 0;
+        for (int i = 0; i < numVertices; i++) {
+            if (i == vertexIndex) continue;
+            int nj = 0;
+            for (int j = 0; j < numVertices; j++) {
+                if (j == vertexIndex) continue;
+                newMatrix[ni][nj] = matrix[i][j];
+                nj++;
+            }
+            newVertices[ni] = vertices[i];
+            ni++;
+        }
+        // Replace the old matrix and vertices with the new ones
+        matrix = newMatrix;
+        vertices = newVertices;
+        numVertices--;
+    }
+
+    public List<T> getNeighbors(int vertexIndex) {
+        List<T> neighbors = new ArrayList<>();
+        for (int i = 0; i < matrix[vertexIndex].length; i++) {
+            if (matrix[vertexIndex][i] == 1) {
+                neighbors.add(vertices[i]);
+            }
+        }
+        return neighbors;
+    }
+
+
+    public AdjacencyListGraph<T> toAdjacencyList() {
+        AdjacencyListGraph<T> result = new AdjacencyListGraph<>();
+
+        for(int i=0;i<numVertices;i++) {
+            result.addVertex(vertices[i]);
+        }
+
+        for(int i=0;i<numVertices;i++) {
+            for(int j=0;j<numVertices;j++) {
+                if(matrix[i][j] > 0) {
+                    result.addEdge(vertices[i], vertices[j]);
+                }
+            }
+        }
+        return result;
+    }
+
+
+    @Override
+    public String toString() {
+        String ret = "  ";
+        for(int i = 0; i < numVertices; i++)
+            ret += vertices[i] + " ";
+        ret += "\n";
+        for(int i = 0; i < numVertices; i++){
+            ret += vertices[i] + " ";
+            for(int j = 0; j < numVertices; j++)
+                ret += matrix[i][j] + " ";
+            ret += "\n";
+        }
+        return ret;
+    }
+
+}
+
+
+
+public class Lavirint{
+
+    public static void main(String[] args) throws IOException {
+        BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+        String []reading= br.readLine().split(",");
+
+        int N=Integer.parseInt(reading[0]);
+        int M=Integer.parseInt(reading[1]);
+
+        String Start="";
+        String End="";
+        AdjacencyListGraph<String> listGraph=new AdjacencyListGraph<String>();
+        Character [][] matrica = new Character[N][M];
+        for(int i=0;i<N;i++){
+            String S=br.readLine();
+            for(int j=0;j<S.length();j++){
+                matrica[i][j]=S.charAt(j);
+            }
+        }
+        for(int i=0;i<N;i++){
+            for(int j=0;j<M;j++){
+                if(matrica[i][j]=='S')Start=i+","+j;
+                if(matrica[i][j]=='E')End=i+","+j;
+                if(matrica[i][j]!='#')listGraph.addVertex(i+","+j);
+            }
+        }
+
+        for(int i=0;i<N;i++){
+            for(int j=0;j<M;j++){
+                if(i>0 && matrica[i][j]!='#' && matrica[i-1][j]!='#')listGraph.addEdge((i-1) + "," + j, i + "," + j);
+                if(j>0 && matrica[i][j]!='#' && matrica[i][j-1]!='#')listGraph.addEdge(i + "," + (j-1), i + "," + j);
+            }
+        }
+
+        listGraph.findPath(Start,End);
+
+        
+        
+
+
+    }
+    
+}
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//zad3
+
+
+
+
+import java.util.*;
+import java.util.Map.Entry;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+
+class AdjacencyListGraph<T> {
+    private Map<T, Set<T>> adjacencyList;
+
+    public AdjacencyListGraph() {
+        this.adjacencyList = new HashMap<>();
+    }
+
+    // Add a vertex to the graph
+    public void addVertex(T vertex) {
+        if (!adjacencyList.containsKey(vertex)) {
+            adjacencyList.put(vertex, new HashSet<>());
+        }
+    }
+
+    // Remove a vertex from the graph
+    public void removeVertex(T vertex) {
+        // Remove the vertex from all adjacency lists
+        for (Set<T> neighbors : adjacencyList.values()) {
+            neighbors.remove(vertex);
+        }
+        // Remove the vertex's own entry in the adjacency list
+        adjacencyList.remove(vertex);
+    }
+
+    // Add an edge to the graph
+    public void addEdge(T source, T destination) {
+        addVertex(source);
+        addVertex(destination);
+
+        adjacencyList.get(source).add(destination);
+        adjacencyList.get(destination).add(source); // for undirected graph
+    }
+
+    // Remove an edge from the graph
+    public void removeEdge(T source, T destination) {
+        if (adjacencyList.containsKey(source)) {
+            adjacencyList.get(source).remove(destination);
+        }
+        if (adjacencyList.containsKey(destination)) {
+            adjacencyList.get(destination).remove(source); // for undirected graph
+        }
+    }
+
+    // Get all neighbors of a vertex
+    public Set<T> getNeighbors(T vertex) {
+        return adjacencyList.getOrDefault(vertex, new HashSet<>());
+    }
+
+    public void DFS(T startVertex) {
+        Set<T> visited = new HashSet<>();
+        DFSUtil(startVertex, visited);
+    }
+
+    private void DFSUtil(T vertex, Set<T> visited) {
+        // Mark the current node as visited and print it
+        visited.add(vertex);
+        System.out.print(vertex + " ");
+
+        // Recur for all the vertices adjacent to this vertex
+        for (T neighbor : getNeighbors(vertex)) {
+            if (!visited.contains(neighbor)) {
+                DFSUtil(neighbor, visited);
+            }
+        }
+    }
+
+
+    public void DFSNonRecursive(T startVertex) {
+        Set<T> visited = new HashSet<>();
+        Stack<T> stack = new Stack<>();
+
+        stack.push(startVertex);
+        while (!stack.isEmpty()) {
+            T vertex = stack.pop();
+            if (!visited.contains(vertex)) {
+                visited.add(vertex);
+                System.out.print(vertex + " ");
+                for (T neighbor : getNeighbors(vertex)) {
+                    if (!visited.contains(neighbor)) {
+                        stack.push(neighbor);
+                    }
+                }
+            }
+        }
+    }
+
+    public List<T> getvertices(){
+        return new ArrayList<>(adjacencyList.keySet());
+    }
+
+    public void BFS(T startVertex) {
+        Set<T> visited = new HashSet<>();
+        Queue<T> queue = new LinkedList<>();
+
+        visited.add(startVertex);
+        queue.add(startVertex);
+
+        while (!queue.isEmpty()) {
+            T vertex = queue.poll();
+            System.out.print(vertex + " ");
+
+            for (T neighbor : getNeighbors(vertex)) {
+                if (!visited.contains(neighbor)) {
+                    visited.add(neighbor);
+                    queue.add(neighbor);
+                }
+            }
+        }
+    }
+
+    public void findPath(T startVertex, T endVertex) {
+        Set<T> visited = new HashSet<>();
+        Stack<T> invertedPath = new Stack<>();
+        visited.add(startVertex);
+        invertedPath.push(startVertex);
+
+        while(!invertedPath.isEmpty() && !invertedPath.peek().equals(endVertex)) {
+            T currentVertex = invertedPath.peek();
+            T tmp = currentVertex;
+
+
+            for(T vertex : getNeighbors(currentVertex)) {
+                tmp = vertex;
+                if(!visited.contains(vertex)) {
+                    break;
+                }
+            }
+
+            if(!visited.contains(tmp)) {
+                visited.add(tmp);
+                invertedPath.push(tmp);
+            }
+            else {
+                invertedPath.pop();
+            }
+        }
+
+        Stack<T> path = new Stack<>();
+        while(!invertedPath.isEmpty()) {
+            path.push(invertedPath.pop());
+        }
+        while(!path.isEmpty()) {
+            System.out.println(path.pop());
+        }
+    }
+
+
+    public Map<T, Set<T>> getAdjacencyList() {
+        return adjacencyList;
+    }
+
+    @Override
+    public String toString() {
+        String ret = new String();
+        for (Entry<T, Set<T>> vertex : adjacencyList.entrySet())
+            ret += vertex.getKey() + ": " + vertex.getValue() + "\n";
+        return ret;
+    }
+
+
+
+}
+
+
+class AdjacencyMatrixGraph<T> {
+    private int numVertices;
+    private int[][] matrix;
+    private T[] vertices;
+
+    @SuppressWarnings("unchecked")
+    public AdjacencyMatrixGraph(int numVertices) {
+        this.numVertices = numVertices;
+        matrix = new int[numVertices][numVertices];
+        vertices = (T[]) new Object[numVertices];
+    }
+
+    public void addVertex(int index, T data) {
+        vertices[index] = data;
+    }
+
+    public T getVertex(int index) {
+        return vertices[index];
+    }
+
+    public void addEdge(int source, int destination) {
+        matrix[source][destination] = 1;
+        matrix[destination][source] = 1; // For undirected graph
+    }
+
+    public boolean isEdge(int source, int destination) {
+        return matrix[source][destination] == 1;
+    }
+
+
+    public void removeEdge(int source, int destination) {
+        matrix[source][destination] = 0;
+        matrix[destination][source] = 0; // For undirected graph
+    }
+
+    @SuppressWarnings("unchecked")
+    public void removeVertex(int vertexIndex) {
+        if (vertexIndex < 0 || vertexIndex >= numVertices) {
+            throw new IndexOutOfBoundsException("Vertex index out of bounds!");
+        }
+        int[][] newMatrix = new int[numVertices-1][numVertices-1];
+        T[] newVertices = (T[]) new Object[numVertices-1];
+        // Copy the vertices and matrix excluding the given vertex
+        int ni = 0;
+        for (int i = 0; i < numVertices; i++) {
+            if (i == vertexIndex) continue;
+            int nj = 0;
+            for (int j = 0; j < numVertices; j++) {
+                if (j == vertexIndex) continue;
+                newMatrix[ni][nj] = matrix[i][j];
+                nj++;
+            }
+            newVertices[ni] = vertices[i];
+            ni++;
+        }
+        // Replace the old matrix and vertices with the new ones
+        matrix = newMatrix;
+        vertices = newVertices;
+        numVertices--;
+    }
+
+    public List<T> getNeighbors(int vertexIndex) {
+        List<T> neighbors = new ArrayList<>();
+        for (int i = 0; i < matrix[vertexIndex].length; i++) {
+            if (matrix[vertexIndex][i] == 1) {
+                neighbors.add(vertices[i]);
+            }
+        }
+        return neighbors;
+    }
+
+
+    public AdjacencyListGraph<T> toAdjacencyList() {
+        AdjacencyListGraph<T> result = new AdjacencyListGraph<>();
+
+        for(int i=0;i<numVertices;i++) {
+            result.addVertex(vertices[i]);
+        }
+
+        for(int i=0;i<numVertices;i++) {
+            for(int j=0;j<numVertices;j++) {
+                if(matrix[i][j] > 0) {
+                    result.addEdge(vertices[i], vertices[j]);
+                }
+            }
+        }
+        return result;
+    }
+
+
+    @Override
+    public String toString() {
+        String ret = "  ";
+        for(int i = 0; i < numVertices; i++)
+            ret += vertices[i] + " ";
+        ret += "\n";
+        for(int i = 0; i < numVertices; i++){
+            ret += vertices[i] + " ";
+            for(int j = 0; j < numVertices; j++)
+                ret += matrix[i][j] + " ";
+            ret += "\n";
+        }
+        return ret;
+    }
+
+}
+
+
+
+public class Socijalna_mreza{
+
+    public static void main(String[] args) throws IOException {
+        BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+        AdjacencyListGraph<String> listGraph=new AdjacencyListGraph<>();
+        int N=Integer.parseInt(br.readLine());
+        for(int i=0;i<N;i++){
+            String ime_prezime=br.readLine();
+            listGraph.addVertex(ime_prezime);
+            int friendN=Integer.parseInt(br.readLine());
+            for(int j=0;j<friendN;j++){
+                String friend=br.readLine();
+                listGraph.addEdge(ime_prezime,friend);
+            }
+        }
+        String kor1=br.readLine();
+        String kor2=br.readLine();
+        br.close();
+
+        //System.out.println(kor1+"-"+listGraph.getNeighbors(kor1));
+        //System.out.println(kor2+"-"+listGraph.getNeighbors(kor2));
+
+        //System.out.println("\n");
+        //List<String> lista=listGraph.getvertices();
+        //for (String s : lista) {
+        //    System.out.println(s+":"+listGraph.getNeighbors(s).toString());
+        //}
+        Set<String> visited=new HashSet<>();
+        int degree=finddegree(kor1,kor2,listGraph,1,visited);
+        System.out.println(degree);
+    }
+
+    private static int finddegree(String kor1, String kor2, AdjacencyListGraph<String> listGraph, int degree,Set<String> visited) {
+        if (listGraph.getNeighbors(kor1).contains(kor2)) return degree;
+        visited.addAll(listGraph.getNeighbors(kor1));
+        if (!listGraph.getNeighbors(kor1).isEmpty()) {
+
+            for (String s : listGraph.getNeighbors(kor1)) {
+                if(listGraph.getNeighbors(s).contains(kor2))return degree+1;
+                visited.add(s);
+                for (String neighbor : listGraph.getNeighbors(s)) {
+                    if(listGraph.getNeighbors(neighbor).contains(kor2) && !visited.contains(neighbor))return degree+2;
+                }
+            }
+            for (String s : listGraph.getNeighbors(kor1)) {
+                return finddegree(s,kor2,listGraph,degree+1,visited);
+            }
+
+        }
+        return 0;
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
