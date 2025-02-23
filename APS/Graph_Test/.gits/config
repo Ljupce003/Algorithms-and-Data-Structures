@@ -1,0 +1,13 @@
+[core]
+	repositoryformatversion = 0
+	filemode = false
+	bare = false
+	logallrefupdates = true
+	symlinks = false
+	ignorecase = true
+[remote "Graph_Test"]
+	url = https://github.com/Ljupce003/Graph_Test.git
+	fetch = +refs/heads/*:refs/remotes/Graph_Test/*
+[branch "master"]
+	remote = Graph_Test
+	merge = refs/heads/master
