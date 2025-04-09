@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class algoritmi {
@@ -257,6 +258,13 @@ public class algoritmi {
                         NZP[i][j] = max(NZP[i - 1][j], NZP[i][j - 1]);
                     }
                 }
+            }
+
+            for (int[] ints : NZP) {
+                for (int anInt : ints) {
+                    System.out.print(anInt+" ");
+                }
+                System.out.println();
             }
 
 
@@ -551,13 +559,13 @@ public class algoritmi {
 
 
         //DUNAMIC PROGRAMMING 5
-//        DP5 dp = new DP5();
-//
-//        String x = "ggcaccacg";
-//        String y = "acggcggatacg";
-//
-//        System.out.println(dp.najdolgaZaednickaPodsekvencaDolzina(x, y));
-//        System.out.println(dp.najdolgaZaednickaPodsekvencaString(x, y));
+        DP5 dp = new DP5();
+
+        String x = "ggcaccacg";
+        String y = "acggcggatacg";
+
+        System.out.println(dp.najdolgaZaednickaPodsekvencaDolzina(x, y));
+        System.out.println(dp.najdolgaZaednickaPodsekvencaString(x, y));
 
 
 
